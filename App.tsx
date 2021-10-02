@@ -1,21 +1,26 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import PolyfillCrypto from 'react-native-webview-crypto';
 
-export default function App() {
+import Home from './src/screens/Home';
+import Publication from './src/screens/Publication';
+
+const AppStack = createNativeStackNavigator();
+
+const App = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <AppStack.Navigator>
+          <AppStack.Screen name='Home' component={Home} />
+          <AppStack.Screen name='Publication' component={Publication} />
+        </AppStack.Navigator>
+      </NavigationContainer>
+      <PolyfillCrypto />
+    </SafeAreaProvider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
