@@ -1,13 +1,39 @@
-// This is an experiment to get Arweave transaction data in React Native.
-// Presently, the arweave-js package is finicky, due to its dependence on Node and browser primitives.
-import axios from 'axios';
-import base64 from 'react-native-base64';
+const chars =
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+const atob = (input: string = '') => {
+  let str = input.replace(/=+$/, '');
+  let output = '';
 
-const instance = axios.create({
-  baseURL: 'https://arweave.net',
-  maxContentLength: 1024 * 1024 * 512,
-  timeout: 20000,
-});
+  if (str.length % 4 == 1) {
+    throw new Error(
+      "'atob' failed: The string to be decoded is not correctly encoded."
+    );
+  }
+  for (
+    let bc = 0, bs = 0, buffer, i = 0;
+    (buffer = str.charAt(i++));
+    ~buffer && ((bs = bc % 4 ? bs * 64 + buffer : buffer), bc++ % 4)
+      ? (output += String.fromCharCode(255 & (bs >> ((-2 * bc) & 6))))
+      : 0
+  ) {
+    buffer = chars.indexOf(buffer);
+  }
+
+  return output;
+};
+
+// Handle apostrophe
+// https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
+const specialDecode = (str: string) => {
+  return decodeURIComponent(
+    atob(str)
+      .split('')
+      .map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join('')
+  );
+};
 
 // Copied from StackOverflow
 export const base64UrlToString = (input: string) => {
@@ -25,11 +51,5 @@ export const base64UrlToString = (input: string) => {
     input += new Array(5 - pad).join('=');
   }
 
-  return base64.decode(input);
-};
-
-export const getTransactionData = async (id: string) => {
-  const response = await instance.get(`tx/${id}/data`);
-
-  console.log(base64.decode(base64UrlToString(response.data)));
+  return specialDecode(input);
 };
