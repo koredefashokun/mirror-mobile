@@ -1,12 +1,11 @@
 import React from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppStackParamList } from '../types/navigation';
 import { getEntries } from '../utils/entries';
 import { getPublication } from '../utils/publication';
 
-import Header from '../components/publication/Header';
 import Entries from '../components/publication/Entries';
 
 const Publication = () => {
@@ -23,7 +22,6 @@ const Publication = () => {
 
     setPublication(publication.publication);
     setEntries(entries);
-    console.log(entries);
     setLoading(false);
   }, []);
 
@@ -38,14 +36,12 @@ const Publication = () => {
       ) : (
         publication &&
         entries && (
-          <View>
-            <Header
-              avatarURL={publication.avatarURL}
-              name={publication.displayName}
-              ensLabel={publication.ensLabel}
-            />
-            <Entries entries={entries} />
-          </View>
+          <Entries
+            avatarURL={publication.avatarURL}
+            name={publication.displayName}
+            ensLabel={publication.ensLabel}
+            entries={entries}
+          />
         )
       )}
     </SafeAreaView>
@@ -55,7 +51,6 @@ const Publication = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
     backgroundColor: '#FFFFFF',
   },
   name: {

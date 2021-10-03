@@ -4,8 +4,12 @@ import { useNavigation, NavigationProp } from '@react-navigation/native';
 import Markdown from 'react-native-markdown-display';
 import { AppStackParamList } from '../../types/navigation';
 import { getExcerpt } from '../../utils/excerpt';
+import Header from './Header';
 
 interface EntriesProps {
+  name: string;
+  ensLabel: string;
+  avatarURL: string;
   entries: any;
 }
 
@@ -41,7 +45,12 @@ const ContinueReadingButton: React.FC<ContinueReadingButtonProps> = ({
 
 const keyExtractor = (entry: any) => entry.digest;
 
-const Entries: React.FC<EntriesProps> = ({ entries }) => {
+const Entries: React.FC<EntriesProps> = ({
+  name,
+  ensLabel,
+  avatarURL,
+  entries,
+}) => {
   const { navigate } = useNavigation<NavigationProp<AppStackParamList>>();
 
   const handleContinueReading = React.useCallback((digest: string) => {
@@ -50,8 +59,8 @@ const Entries: React.FC<EntriesProps> = ({ entries }) => {
 
   const renderItem: ListRenderItem<any> = React.useCallback(
     ({ item }) => (
-      <View>
-        <Text>{item.title}</Text>
+      <View style={{ marginVertical: 16 }}>
+        <Text style={{ fontSize: 24, fontWeight: 'bold' }}>{item.title}</Text>
         <Markdown>{getExcerpt(item.body)}</Markdown>
 
         {item.body.split('\n\n').length > 4 && (
@@ -65,13 +74,15 @@ const Entries: React.FC<EntriesProps> = ({ entries }) => {
   );
 
   return (
-    <View>
-      <FlatList
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-        data={entries}
-      />
-    </View>
+    <FlatList
+      style={{ paddingHorizontal: 16 }}
+      ListHeaderComponent={
+        <Header avatarURL={avatarURL} name={name} ensLabel={ensLabel} />
+      }
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      data={entries}
+    />
   );
 };
 

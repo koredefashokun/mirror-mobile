@@ -1,13 +1,29 @@
 import slug from 'slug';
 import arweave from './arweave';
-import { contributorAddresses } from './ens';
-import { arweaveQL } from './graphql';
+import { arweaveQL, mirrorQL } from './graphql';
 import fetchSingleTransaction from '../queries/fetch-single-transaction';
 import fetchTransactions from '../queries/fetch-transactions';
 import { base64UrlToString } from './arweave-parser';
-// import { getConfig } from "@/hooks/getConfig";
+import { gql } from '@apollo/client';
 
-export const getEntryPaths = async () => {
+export const getEntryPaths = async (domain: string) => {
+  const {
+    data: { publicationContributors },
+  } = await mirrorQL.query({
+    query: gql`
+      query ContributorAddressQuery($ensDomain: String) {
+        publicationContributors(ensLabel: $ensDomain) {
+          address
+        }
+      }
+    `,
+    variables: { ensDomain: domain },
+  });
+
+  const contributorAddresses = publicationContributors.map(
+    (c: any) => c.address
+  );
+
   const {
     data: {
       transactions: { edges },
@@ -36,7 +52,7 @@ export const getEntryPaths = async () => {
 export const getEntries = async (domain: string) => {
   // const { ensDomain } = getConfig();
 
-  const paths = await getEntryPaths();
+  const paths = await getEntryPaths(domain);
 
   return (
     await Promise.all(
