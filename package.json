@@ -22,6 +22,7 @@
     "react-native-markdown-display": "^7.0.0-alpha.2",
     "react-native-safe-area-context": "3.2.0",
     "react-native-screens": "~3.4.0",
+    "react-native-svg": "12.1.1",
     "react-native-web": "~0.13.12",
     "react-native-webview": "^11.13.1",
     "react-native-webview-crypto": "^0.0.23",
